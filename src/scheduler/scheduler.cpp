@@ -3,9 +3,12 @@
 #include <stdio.h>
 #include <string.h>
 #include <sys/time.h>
+#include <Python.h>
 
-#include "exceptions.h"
-#include "scheduler.h"
+#include "exceptions.hpp"
+#include "scheduler.hpp"
+#include "tasks.hpp"
+
 
 /**
  * @brief Construct a new Task object  
@@ -117,8 +120,7 @@ void dispatch_task(void) {
     if(tasks[i].func && tasks[i].exec) {
       tasks[i].exec = false;
       curr_task = i;
-      std::cout << "Current task: " << i << std::endl;
-      tasks[i].func();
+      tasks[i].func(); // TODO: disable interrupts during other parts
       curr_task = prev_task;
       /* Delete task if one-shot */
       if(!tasks[i].period) tasks[i].func = NULL;
@@ -126,20 +128,26 @@ void dispatch_task(void) {
   }
 }
 
+// TODO: Add proper functions to be called by tasks
+
 int main(int argc, char **argv) {
 
-  sched_init();
+  // sched_init();
 
-  try {
-    // Need to add tasks by increasing order of period, decreasing order of priority
-    sched_add_task(1, 0, []() { std::cout << "Bimo1" << std::endl;});
-    sched_add_task(2, 0, []() { std::cout << "Bimo2" << std::endl;});
-    sched_add_task(3, 0, []() { std::cout << "Bimo3" << std::endl;});
-  } catch (TaskQueueFullException e) {
-    std::cout << e.what() << std::endl;
-  }
+  // try {
+  //   // Need to add tasks by increasing order of period, decreasing order of priority
+  //   sched_add_task(1, 0, []() { std::cout << "Bimo1" << std::endl;});
+  //   sched_add_task(2, 0, []() { std::cout << "Bimo2" << std::endl;});
+  //   sched_add_task(3, 0, []() { std::cout << "Bimo3" << std::endl;});
+  // } catch (TaskQueueFullException e) {
+  //   std::cout << e.what() << std::endl;
+  // }
 
-  while(1); // Infinite loop
+  // while(1); // Infinite loop
+
+  // Call python program
+  call_task("tasks.py", "test_task");
+
 
   return 0;
 
