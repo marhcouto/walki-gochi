@@ -1,7 +1,7 @@
 
 .PHONY: clear
 
-P_LIBS = /usr/include/python2.7/
+P_LIBS = /usr/include/python3.8/
 
 
 scheduler: scheduler.o tasks.o

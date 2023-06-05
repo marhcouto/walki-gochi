@@ -6,20 +6,9 @@
 
 
 void call_task(std::string module_name, std::string function_name) {
-
-  // // Alternative way
-  // wchar_t* program_name = (wchar_t*) module_name.c_str(); 
-  // Py_SetProgramName(program_name);
-  // Py_Initialize();
-  // std::string command = "exec(open('" + module_name + "').read())";
-  // PyRun_SimpleString(command.c_str());
-  // if (Py_FinalizeEx() < 0) {
-  //   exit(120);
-  // }
   
   // Best way
-  setenv("PYTHON_PATH", ".", 1);
-  // Py_SetPath(L".");
+  setenv("PYTHONPATH", ".", 1);
   
   PyObject *p_name, *p_module, *p_func;
   PyObject *p_args, *p_value;
@@ -32,6 +21,7 @@ void call_task(std::string module_name, std::string function_name) {
   Py_DECREF(p_name);
 
   if (p_module == NULL) {
+    PyErr_Print();
     throw InvalidPythonModuleException();
   }
 

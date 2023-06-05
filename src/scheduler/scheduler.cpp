@@ -45,7 +45,6 @@ unsigned int curr_task = MAX_TASKS; // Current task
  * @param signum 
  */
 void timer_handler(int signum) {
-  // std::cout << "Prriiimmm" << std::endl;
   update_schedule();
   dispatch_task();
 }
@@ -60,6 +59,7 @@ void sched_init(void) {
 
   memset(&sa, 0, sizeof(sa));
   sa.sa_handler = &timer_handler;
+  sa.sa_flags = SA_NODEFER;
   sigaction(SIGALRM, &sa, NULL);
 
   getitimer(ITIMER_REAL, &timer);
@@ -132,22 +132,18 @@ void dispatch_task(void) {
 
 int main(int argc, char **argv) {
 
-  // sched_init();
+  sched_init();
 
-  // try {
-  //   // Need to add tasks by increasing order of period, decreasing order of priority
-  //   sched_add_task(1, 0, []() { std::cout << "Bimo1" << std::endl;});
-  //   sched_add_task(2, 0, []() { std::cout << "Bimo2" << std::endl;});
-  //   sched_add_task(3, 0, []() { std::cout << "Bimo3" << std::endl;});
-  // } catch (TaskQueueFullException e) {
-  //   std::cout << e.what() << std::endl;
-  // }
+  try {
+    // Need to add tasks by increasing order of period, decreasing order of priority
+    sched_add_task(1, 0, []() { std::cout << "Bimo1" << std::endl; });
+    sched_add_task(2, 0, []() { std::cout << "Bimo2" << std::endl; });
+    sched_add_task(3, 0, []() { call_task("tasks", "test_task"); });
+  } catch (TaskQueueFullException e) {
+    std::cout << e.what() << std::endl;
+  }
 
-  // while(1); // Infinite loop
-
-  // Call python program
-  call_task("tasks.py", "test_task");
-
+  while(1); // Infinite loop
 
   return 0;
 
