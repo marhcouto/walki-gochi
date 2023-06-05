@@ -136,9 +136,10 @@ int main(int argc, char **argv) {
 
   try {
     // Need to add tasks by increasing order of period, decreasing order of priority
-    sched_add_task(1, 0, []() { std::cout << "Bimo1" << std::endl; });
-    sched_add_task(2, 0, []() { std::cout << "Bimo2" << std::endl; });
-    sched_add_task(3, 0, []() { call_task("tasks", "test_task"); });
+    // sched_add_task(0, 0, []() { call_task("tamagotchi", "tamagotchi_task"); });
+    // sched_add_task(2, 0, []() { call_task("tasks", "test_task"); });
+    sched_add_task(2, 0, []() { std::cout << "Other" << std::endl; });
+    sched_add_task(3, 0, []() { call_task("server.main", "start"); });
   } catch (TaskQueueFullException e) {
     std::cout << e.what() << std::endl;
   }

@@ -1,11 +1,11 @@
 
 .PHONY: clear
 
-P_LIBS = /usr/include/python3.8/
+P_LIBS = /usr/include/python3.9/
 
 
 scheduler: scheduler.o tasks.o
-	g++ scheduler.o tasks.o -o scheduler.exe -I ${P_LIBS} -L ${P_LIBS} -lpython3.8
+	g++ scheduler.o tasks.o -o scheduler.exe -I ${P_LIBS} -L ${P_LIBS} -lpython3.9
 
 scheduler.o: scheduler.cpp scheduler.hpp exceptions.hpp
 	g++ -I ${P_LIBS} -c scheduler.cpp -o scheduler.o
