@@ -49,18 +49,32 @@ void timer_handler(int signum) {
   dispatch_task();
 }
 
+/**
+ * @brief Handler for keyboard interrupt
+ * exits program
+ * 
+ * @param signum 
+ */
+void kill_handler(int signum) {
+  std::cout << "\n\nKILLING SCHEDULER\n";
+  exit(1);
+}
+
 /** 
  * @brief Initializes the scheduler
 */
 void sched_init(void) {
 
-  struct sigaction sa;
+  struct sigaction sa_alrm, sa_int;
   struct itimerval timer;
 
-  memset(&sa, 0, sizeof(sa));
-  sa.sa_handler = &timer_handler;
-  sa.sa_flags = SA_NODEFER;
-  sigaction(SIGALRM, &sa, NULL);
+  memset(&sa_int, 0, sizeof(sa_int));
+  memset(&sa_alrm, 0, sizeof(sa_alrm));
+  sa_int.sa_handler = &kill_handler;
+  sa_alrm.sa_handler = &timer_handler;
+  sa_alrm.sa_flags = SA_NODEFER;
+  sigaction(SIGINT, &sa_int, NULL);
+  sigaction(SIGALRM, &sa_alrm, NULL);
 
   getitimer(ITIMER_REAL, &timer);
 
@@ -136,10 +150,12 @@ int main(int argc, char **argv) {
 
   try {
     // Need to add tasks by increasing order of period, decreasing order of priority
-    // sched_add_task(0, 0, []() { call_task("tamagotchi", "tamagotchi_task"); });
+    sched_add_task(5, 2, []() { call_task("tamagotchi", "tamagotchi_task"); });
     // sched_add_task(2, 0, []() { call_task("tasks", "test_task"); });
-    sched_add_task(2, 0, []() { std::cout << "Other" << std::endl; });
-    sched_add_task(3, 0, []() { call_task("server.main", "start"); });
+    // sched_add_task(1, 0, []() { call_task("obstacle_avoidance", "main"); });
+    // sched_add_task(2, 0, []() { std::cout << "Other" << std::endl; });
+    // sched_add_task(0, 0, []() { call_task("server.main", "start"); });
+    sched_add_task(0, 0, []() { call_task("mjpeg_server", "start"); });
   } catch (TaskQueueFullException e) {
     std::cout << e.what() << std::endl;
   }

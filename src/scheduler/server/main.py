@@ -7,6 +7,10 @@ import threading
 import socket  # ip
 import os
 import subprocess
+import pickle
+
+TAMAGOTCHI_FILE = "tamagotchi"
+SENSORS_FILE = "can_move_forward.pkl"
 
 Ab = AlphaBot()
 pwm = PCA9685(0x40)
@@ -28,6 +32,13 @@ pwm.setServoPulse(0, HPulse)
 def index():
     return template(os.path.dirname(os.path.abspath(__file__)) + "/index")
 
+@get("/state")
+def index():
+    if os.path.exists(TAMAGOTCHI_FILE):
+        with open(TAMAGOTCHI_FILE, 'rb') as tamagotchi_file:
+            tamagotchi = pickle.load(tamagotchi_file)
+        return tamagotchi.get_text()
+    else: return ""
 
 @route('/<filename>')
 def server_static(filename):
@@ -45,6 +56,7 @@ def cmd():
     code = request.body.read().decode()
     speed = request.POST.get('speed')
     print(code)
+
     if (speed != None):
         Ab.setPWMA(float(speed))
         Ab.setPWMB(float(speed))
@@ -90,6 +102,14 @@ def cmd():
         HStep = -20
         print("right")
 
+    # Sensors
+    # can_move_forward = True
+    # if os.path.exists(SENSORS_FILE):
+    #     with open(SENSORS_FILE, 'rb') as f:
+    #         can_move_forward = pickle.load(f)
+    # if not can_move_forward and front:
+    #     front = None
+
     if side == True:
         Ab.right()
     elif side == False:
@@ -101,6 +121,11 @@ def cmd():
             Ab.backward()
         else:
             Ab.stop()
+
+    # Save movement intention
+    # with open("movement.pkl", "wb") as f:
+    #     pickle.dump(intention, f)
+
     return "OK"
 
 
@@ -158,6 +183,7 @@ def start():
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     s.connect(('8.8.8.8', 80))
     localhost = s.getsockname()[0]
+    print("ASDJAKSDUH")
     run(host=localhost, port=3000)
 
 

@@ -1,7 +1,7 @@
 #ifndef SCHEDULER_H
 #define SCHEDULER_H
 
-#define MAX_TASKS 10
+#define MAX_TASKS 5
 #define MICRO_CYCLE_TIME 100000
 
 
