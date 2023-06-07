@@ -30,6 +30,12 @@ make stats
 ./stats
 ``` 
 
+## Images
+
+![Robot](./img/robot.jpg)
+
+![Website](./img/website.png)
+
 ## Authors
 
 - [Marcelo Couto](https://github.com/marhcouto/)
