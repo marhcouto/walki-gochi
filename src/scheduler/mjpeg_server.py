@@ -9,6 +9,7 @@ import logging
 import socketserver
 from http import server
 from threading import Condition
+import pickle
 
 from picamera2 import Picamera2
 from picamera2.encoders import JpegEncoder
@@ -25,6 +26,12 @@ PAGE = """\
 </body>
 </html>
 """
+
+# MAX_CAPTURES = 1
+CAPTURES_UNTIL_SAVE = 10
+
+# last_captures = []
+captures_since_save = 0
 
 
 class StreamingOutput(io.BufferedIOBase):
@@ -56,13 +63,27 @@ class StreamingHandler(server.BaseHTTPRequestHandler):
             self.send_header('Age', 0)
             self.send_header('Cache-Control', 'no-cache, private')
             self.send_header('Pragma', 'no-cache')
-            self.send_header('Content-Type', 'multipart/x-mixed-replace; boundary=FRAME')
+            self.send_header(
+                'Content-Type', 'multipart/x-mixed-replace; boundary=FRAME')
             self.end_headers()
             try:
                 while True:
                     with output.condition:
                         output.condition.wait()
                         frame = output.frame
+                    # last_captures.append(frame)
+                    # if len(last_captures) > MAX_CAPTURES:
+                    #     last_captures.pop(0)
+                    global captures_since_save
+                    captures_since_save += 1
+                    if captures_since_save >= CAPTURES_UNTIL_SAVE:
+                        with open("capture.jpg", "wb+") as capture_file:
+                            # Write bytes to file
+                            capture_file.write(frame)
+                        # filehandler = open("capture.jpg", "wb+")
+                        # pickle.dump(frame, filehandler)
+                        captures_since_save = 0
+
                     self.wfile.write(b'--FRAME\r\n')
                     self.send_header('Content-Type', 'image/jpeg')
                     self.send_header('Content-Length', len(frame))
@@ -84,7 +105,8 @@ class StreamingServer(socketserver.ThreadingMixIn, server.HTTPServer):
 
 
 picam2 = Picamera2()
-picam2.configure(picam2.create_video_configuration(main={"size": (640, 480)}))
+picam2.configure(picam2.create_video_configuration(
+    main={"size": (640, 480)}))
 output = StreamingOutput()
 picam2.start_recording(JpegEncoder(), FileOutput(output))
 
