@@ -19,7 +19,7 @@ def beep_off():
     GPIO.output(BUZ, GPIO.LOW)
 
 
-def reaction_task():
+def main():
     tamagotchi = None
     if os.path.exists(TAMAGOTCHI_FILE):
         with open(TAMAGOTCHI_FILE, 'rb') as tamagotchi_file:
@@ -39,4 +39,4 @@ def reaction_task():
 
 
 if __name__ == "__main__":
-    reaction_task()
+    main()

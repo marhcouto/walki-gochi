@@ -148,23 +148,17 @@ void dispatch_task(void) {
   }
 }
 
-// TODO: Add proper functions to be called by tasks
-
 int main(int argc, char **argv) {
 
   sched_init();
 
   try {
     // Need to add tasks by increasing order of period, decreasing order of priority
-    sched_add_task(1, 0, []() { call_task("movement", "main"); });
-    sched_add_task(1, 0, []() { call_task("camera_movement", "main"); });
-    sched_add_task(3, 0, []() { call_task("tamagotchi", "tamagotchi_task"); });
-    sched_add_task(3, 0, []() { call_task("reaction", "reaction_task"); });
-    // sched_add_task(11, 10, []() { call_task("tasks", "test_task"); });
-    // sched_add_task(14, 0, []() { call_task("tasks", "test_task"); });
-    // sched_add_task(2, 0, []() { std::cout << "Other" << std::endl; });
-    // sched_add_task(0, 0, []() { call_task("server.main", "start"); });
-    // sched_add_task(1, 0, []() { call_task("mjpeg_server", "start"); });
+    sched_add_task(1, 0, []() { call_task("tasks.movement", "main"); });
+    sched_add_task(1, 0, []() { call_task("tasks.camera_movement", "main"); });
+    sched_add_task(3, 0, []() { call_task("tasks.tamagotchi_state", "main"); });
+    sched_add_task(3, 0, []() { call_task("tasks.tamagotchi_reaction", "main"); });
+    // sched_add_task(0, 0, []() { call_task("tasks.server.main_server", "start"); }); // Server task
   } catch (TaskQueueFullException e) {
     std::cout << e.what() << std::endl;
   }

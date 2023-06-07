@@ -82,7 +82,6 @@ def load_images():
 
     pil_image_list = []
     for image_bytes in image_list:
-        #pil_image_list.append(Image.frombytes('RGBA', (640, 480), image_bytes, 'raw'))
         stream = BytesIO(image_bytes)
         pil_image_list.append(Image.open(stream).convert("RGBA"))
     return pil_image_list
@@ -166,7 +165,7 @@ class Tamagotchi:
             return "Just chillin"
 
 
-def tamagotchi_task():
+def main():
     if os.path.exists(TAMAGOTCHI_FILE):
         with open(TAMAGOTCHI_FILE, 'rb') as tamagotchi_file:
             tamagotchi = pickle.load(tamagotchi_file)
@@ -180,4 +179,4 @@ def tamagotchi_task():
 
 
 if __name__ == "__main__":
-    tamagotchi_task()
+    main()
