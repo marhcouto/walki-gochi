@@ -36,6 +36,8 @@ make stats
 
 ![Website](./img/website.png)
 
+[Youtube Video](https://www.youtube.com/watch?v=Gruj3MmPWX4)
+
 ## Authors
 
 - [Marcelo Couto](https://github.com/marhcouto/)
