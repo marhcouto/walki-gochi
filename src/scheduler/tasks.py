@@ -1,5 +1,6 @@
 
 def test_task():
-    for i in range(100000000):
-        if (i % 1000000 == 0):
-            print("Task 1: {}".format(i))
+    n = 0
+    for i in range(10000000000):
+        n += 1
+    print("FINIISHED")

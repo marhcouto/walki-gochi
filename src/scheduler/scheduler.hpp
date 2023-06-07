@@ -2,7 +2,9 @@
 #define SCHEDULER_H
 
 #define MAX_TASKS 5
-#define MICRO_CYCLE_TIME 100000
+#define MICRO_CYCLE_TIME 60000
+
+bool interrupts_enabled;
 
 
 struct Task {

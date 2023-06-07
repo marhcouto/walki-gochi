@@ -28,10 +28,10 @@ PAGE = """\
 """
 
 # MAX_CAPTURES = 1
-# CAPTURES_UNTIL_SAVE = 1
+CAPTURES_UNTIL_SAVE = 10
 
 # last_captures = []
-# captures_since_save = 0
+captures_since_save = 0
 
 
 class StreamingOutput(io.BufferedIOBase):
@@ -74,11 +74,15 @@ class StreamingHandler(server.BaseHTTPRequestHandler):
                     # last_captures.append(frame)
                     # if len(last_captures) > MAX_CAPTURES:
                     #     last_captures.pop(0)
-                    # global captures_since_save
-                    # captures_since_save += 1
-                    # if captures_since_save >= CAPTURES_UNTIL_SAVE:
-                    #     filehandler = open("captures", "wb+")
-                    #     pickle.dump(last_captures, filehandler)
+                    global captures_since_save
+                    captures_since_save += 1
+                    if captures_since_save >= CAPTURES_UNTIL_SAVE:
+                        with open("capture.jpg", "wb+") as capture_file:
+                            # Write bytes to file
+                            capture_file.write(frame)
+                        # filehandler = open("capture.jpg", "wb+")
+                        # pickle.dump(frame, filehandler)
+                        captures_since_save = 0
 
                     self.wfile.write(b'--FRAME\r\n')
                     self.send_header('Content-Type', 'image/jpeg')
@@ -100,18 +104,15 @@ class StreamingServer(socketserver.ThreadingMixIn, server.HTTPServer):
     daemon_threads = True
 
 
-def start():
-    picam2 = Picamera2()
-    picam2.configure(picam2.create_video_configuration(main={"size": (640, 480)}))
-    output = StreamingOutput()
-    picam2.start_recording(JpegEncoder(), FileOutput(output))
+picam2 = Picamera2()
+picam2.configure(picam2.create_video_configuration(
+    main={"size": (640, 480)}))
+output = StreamingOutput()
+picam2.start_recording(JpegEncoder(), FileOutput(output))
 
-    try:
-        address = ('', 8000)
-        server = StreamingServer(address, StreamingHandler)
-        server.serve_forever()
-    finally:
-        picam2.stop_recording()
-
-if (__name__ == "__main__"):
-    start()
+try:
+    address = ('', 8000)
+    server = StreamingServer(address, StreamingHandler)
+    server.serve_forever()
+finally:
+    picam2.stop_recording()
